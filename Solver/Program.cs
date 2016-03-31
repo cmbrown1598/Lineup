@@ -24,8 +24,7 @@ namespace Solver
                 .Select(a => a.Split(','))
                 .Select(b => new PlayerItem
                 {
-                   Name = b[0],
-                   Gender = b[1] 
+                   Name = b[0]
                 })
                 .ToArray();
 
