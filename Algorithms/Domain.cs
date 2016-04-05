@@ -17,9 +17,9 @@ namespace Algorithms
             PlayerPositionItems = playerPositionItems;
         }
 
-        public ScheduleItem[] ScheduleItems { get; private set; }
+        public ScheduleItem[] ScheduleItems { get; set; }
 
-        public PlayerItem[] PlayerItems { get; private set; }
+        public PlayerItem[] PlayerItems { get; set; }
 
         public PlayerGameAvailabilityItem[] PlayerGameAvailabilityItems { get; set; }
         public PlayerPositionItem[] PlayerPositionItems { get; set; }
