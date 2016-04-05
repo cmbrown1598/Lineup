@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Policy;
@@ -115,94 +114,37 @@ namespace Tests
         }
 
         [Test]
-        public void SolveSolvesSuccessfullyForValidSetups()
+        public void SolveSolvesSuccessfullyForBasicSetups()
         {
+            var positions = Enum.GetValues(typeof (Position));
             var result = SystemUnderTest.Solve(Domain);
 
-            Assert.That(result.Games.First().IsForfiet, Is.False);
+            var game = result.Games.First();
+            // The game is not forfiet
+            Assert.That(game.IsForfiet, Is.False);
 
-        }
-    }
-
-    public class Solver
-    {
-        public Solution Solve(Domain domain)
-        {
-            var solution = new Solution
+            foreach (
+                var playersList in
+                    game.Innings.Select(inning => (from Position position in positions select inning[position]).ToList())
+                )
             {
-                IsSolvable = DomainIsSolvable(domain)
-            };
-
-            if (!solution.IsSolvable) return solution;
-
-
-            // solve the damn thing
-            foreach (var item in domain.ScheduleItems)
-            {
-                var availablePlayers = domain.PlayerItems.Except(
-                    domain.PlayerGameAvailabilityItems
-                        .Where(a => a.GameNumber == item.GameNumber)
-                        .Select(b => new PlayerItem { Name = b.Name})
-                    ).ToArray();
-
-                var game = new Game { Name = $"{item.GameNumber} - {item.Opponent}" };
-
-                if (availablePlayers.Length < 10)
-                {
-                    game.IsForfiet = true;
-                }
-
-
-                solution = solution.AddGame(game);
+                // all players fielded are unique
+                Assert.That(playersList.Distinct().Count(), Is.EqualTo(10));
             }
 
-            return solution;
+            foreach (Position position in positions)
+            {
+                var playerList = game.Innings.Select(inning => inning[position]).ToList();
+                for (var i = 0; i < playerList.Count - 2; i++)
+                {
+                    var isInvalid = (playerList[i] == playerList[i + 1]) && (playerList[i + 1] == playerList[i + 2]);
+                    // no player is set to the same position more than twice.
+                    Assert.That(isInvalid, Is.False);
+                }
+            }
+
+
+
         }
-
-        private bool DomainIsSolvable(Domain domain) 
-        {
-            var solvable = domain.PlayerItems?.Any() ?? false;
-            solvable &= domain.ScheduleItems?.Any() ?? false;
-            solvable &= domain.PlayerPositionItems?.Any() ?? false;
-            solvable &= domain.PlayerGameAvailabilityItems != null; 
-
-
-            return solvable;
-        }
-    }
-
-    public class Solution
-    {
-        private Game[] _games = new Game[0];
-        public IReadOnlyCollection<Game> Games => new ReadOnlyCollection<Game>(_games);
-
-        public bool IsSolvable { get; set; }
-
-        public Solution AddGame(Game game)
-        {
-            var array = new Game[_games.Length + 1];
-            Array.Copy(_games, 0, array, 1, _games.Length);
-            array[0] = game;
-            return new Solution {_games = array, IsSolvable = this.IsSolvable};
-        }
-
-    }
-    
-    public class Game
-    {
-        private readonly Inning[] _innings = Enumerable.Range(1, 7).Select(a => new Inning()).ToArray();
-
-
-        public IReadOnlyCollection<Inning> Innings => new ReadOnlyCollection<Inning>(_innings);
-
-        public bool IsForfiet { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class Inning
-    {
-        private Dictionary<Position, string> _positionDictionary = new Dictionary<Position, string>();
-
-        
     }
 }
