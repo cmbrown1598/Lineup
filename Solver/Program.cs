@@ -57,10 +57,36 @@ namespace Solver
         {
             var domain = LoadDomain();
 
-            /// Now, Assemble and write out your Lineups.
-            
-            Console.WriteLine("Your lineup is printed. Press Enter to Exit.");
-            Console.ReadLine();
+            // Now, Assemble and write out your Lineups.
+            var solver = new LineupSolver();
+            var solution = solver.Solve(domain);
+            if (solution.IsSolvable)
+            {
+                foreach (var game in solution.Games)
+                {
+                    Console.WriteLine(game.Name);
+                    Console.WriteLine();
+                    foreach (var inning in game.Innings)
+                    {
+                        Console.WriteLine($"Inning #{inning.Number}");
+                        foreach (var position in LineupSolver.AvailablePositions())
+                        {
+                            Console.WriteLine($"\t{position} - {inning[position]}");
+                        }
+                    }
+
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine("Your lineup is printed. Press Enter to Exit.");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("Data provided does not allow for a solution here. Press Enter to Exit.");
+                Console.ReadLine();
+            }
+
 
         }
     }

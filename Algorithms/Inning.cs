@@ -22,5 +22,7 @@ namespace Algorithms
             get { return _positionDictionary[indexer]; }
             set { _positionDictionary[indexer] = value; }
         }
+
+        public int Number { get; set; }
     }
 }

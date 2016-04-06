@@ -6,7 +6,7 @@ namespace Algorithms
 {
     public class Game
     {
-        private readonly ReadOnlyCollection<Inning> _innings = new ReadOnlyCollection<Inning>(Enumerable.Range(1, 7).Select(a => new Inning()).ToArray());
+        private readonly ReadOnlyCollection<Inning> _innings = new ReadOnlyCollection<Inning>(Enumerable.Range(1, 7).Select(a => new Inning { Number = a}).ToArray());
 
         public IReadOnlyCollection<Inning> Innings => _innings;
 

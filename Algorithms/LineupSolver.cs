@@ -1,11 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace Algorithms
 {
-    public class Solver
+    public class LineupSolver
     {
+        private static ReadOnlyCollection<Position> _availablePositions; 
+
+        public static ReadOnlyCollection<Position> AvailablePositions()
+        {
+            return _availablePositions ?? (_availablePositions = new ReadOnlyCollection<Position>(new[]
+            {
+                Position.Pitcher,
+                Position.Catcher,
+                Position.FirstBase,
+                Position.SecondBase,
+                Position.ShortStop,
+                Position.ThirdBase,
+                Position.RightField,
+                Position.CenterField,
+                Position.LeftField,
+                Position.Rover
+            }));
+        }
 
         private class GamePlayer
         {
@@ -17,10 +38,8 @@ namespace Algorithms
             public string PlayerName { get; set; }
 
             public List<Position> PositionsInOrderOfPreference { get; private set; }
+
         }
-
-
-
 
         public Solution Solve(Domain domain)
         {
@@ -49,14 +68,17 @@ namespace Algorithms
                 }
                 else
                 {
+                    var j = 0;
                     foreach (var inning in game.Innings)
                     {
-                        var i = 0;
-                        foreach (Position position in Enum.GetValues(typeof (Position)))
+                        var i = j;
+                        foreach (var position in AvailablePositions())
                         {
                             inning[position] = availablePlayers[i].Name;
                             i++;
+                            if (i == availablePlayers.Length) i = 0;
                         }
+                        j++;
                     }
 
                 }

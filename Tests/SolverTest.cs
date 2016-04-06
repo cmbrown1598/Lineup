@@ -13,7 +13,7 @@ namespace Tests
     [TestFixture]
     public class SolverTest
     {
-        public Solver SystemUnderTest { get; set; }
+        public LineupSolver SystemUnderTest { get; set; }
         public Domain Domain { get; set; }
 
         public PlayerItem[] GetPlayers(int numberOfPlayers)
@@ -37,7 +37,7 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            SystemUnderTest = new Solver();
+            SystemUnderTest = new LineupSolver();
             Domain = new Domain(
                     new[] { new ScheduleItem { GameNumber = 1, Opponent = "No One" } }, 
                     GetPlayers(10), 
@@ -60,6 +60,16 @@ namespace Tests
             var result = SystemUnderTest.Solve(Domain);
 
             Assert.That(result.Games.First().Innings.Count, Is.EqualTo(7));
+        }
+
+        [Test]
+        public void EachInningIsNumberedAppropriately()
+        {
+            var result = SystemUnderTest.Solve(Domain);
+
+            Assert.That(result.Games.First().Innings.First().Number, Is.EqualTo(1));
+            Assert.That(result.Games.First().Innings.Skip(3).First().Number, Is.EqualTo(4));
+            Assert.That(result.Games.First().Innings.Last().Number, Is.EqualTo(7));
         }
 
         [Test]
