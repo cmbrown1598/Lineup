@@ -124,6 +124,28 @@ namespace Tests
         }
 
         [Test]
+        public void WhenMoreThanEnoughPlayersAreAvailableEachInningHasSomeoneSittingOut()
+        {
+            var positions = Enum.GetValues(typeof(Position));
+            Domain.PlayerItems = GetPlayers(11);
+            Domain.PlayerPositionItems = GetPlayerPositions(11);
+
+            var result = SystemUnderTest.Solve(Domain);
+
+            Assert.That(result.IsSolvable, Is.True);
+            Assert.That(result.Games.First().IsForfiet, Is.False);
+
+            foreach (var inning in result.Games.First().Innings)
+            {
+                Assert.That(inning.SittingOut.Length, Is.EqualTo(1));
+                foreach (Position position in positions)
+                {
+                    Assert.That(inning[position], Is.Not.EqualTo(inning.SittingOut[0]));
+                }
+            }
+        }
+
+        [Test]
         public void SolveSolvesSuccessfullyForBasicSetups()
         {
             var positions = Enum.GetValues(typeof (Position));
@@ -152,9 +174,6 @@ namespace Tests
                     Assert.That(isInvalid, Is.False);
                 }
             }
-
-
-
         }
     }
 }

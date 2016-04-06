@@ -23,6 +23,8 @@ namespace Algorithms
             set { _positionDictionary[indexer] = value; }
         }
 
+        public string[] SittingOut { get; set; }
+
         public int Number { get; set; }
     }
 }

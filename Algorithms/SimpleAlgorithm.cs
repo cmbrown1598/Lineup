@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -22,12 +19,19 @@ namespace Algorithms
                 foreach (var inning in game.Innings)
                 {
                     var i = j;
+                    var added = new List<string>();
                     foreach (var position in LineupSolver.AvailablePositions())
                     {
                         inning[position] = playersAvailableForThisGame[i].PlayerName;
+                        added.Add(inning[position]);
                         i++;
                         if (i == playersAvailableForThisGame.Length) i = 0;
                     }
+
+                    inning.SittingOut = playersAvailableForThisGame.Select(a => a.PlayerName)
+                        .Except(added)
+                        .ToArray();
+
                     j++;
                 }
             }
