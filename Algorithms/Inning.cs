@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Algorithms;
 
-namespace Tests
+namespace Algorithms
 {
     public class Inning
     {

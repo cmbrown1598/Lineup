@@ -1,11 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Algorithms;
 
-namespace Tests
+namespace Algorithms
 {
     public class Solver
     {
+
+        private class GamePlayer
+        {
+            public GamePlayer()
+            {
+                PositionsInOrderOfPreference = new List<Position>();
+            }
+
+            public string PlayerName { get; set; }
+
+            public List<Position> PositionsInOrderOfPreference { get; private set; }
+        }
+
+
+
+
         public Solution Solve(Domain domain)
         {
             var solution = new Solution
@@ -33,10 +49,9 @@ namespace Tests
                 }
                 else
                 {
-                    var i = 0;
                     foreach (var inning in game.Innings)
                     {
-                        i = 0;
+                        var i = 0;
                         foreach (Position position in Enum.GetValues(typeof (Position)))
                         {
                             inning[position] = availablePlayers[i].Name;

@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Tests
+namespace Algorithms
 {
     public class Game
     {

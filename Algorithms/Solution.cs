@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Tests
+namespace Algorithms
 {
     public class Solution
     {
