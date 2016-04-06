@@ -9,6 +9,13 @@ namespace Algorithms
 {
     public class LineupSolver
     {
+        public static Dictionary<SolvingMode, ISolveGamesAlgorithm> SolvingModeAlgorithms { get; } = new Dictionary
+            <SolvingMode, ISolveGamesAlgorithm>()
+        {
+            {SolvingMode.Simple, new SimpleAlgorithm()}
+        };
+
+
         private static ReadOnlyCollection<Position> _availablePositions; 
 
         public static ReadOnlyCollection<Position> AvailablePositions()
@@ -28,18 +35,8 @@ namespace Algorithms
             }));
         }
 
-        private class GamePlayer
-        {
-            public GamePlayer()
-            {
-                PositionsInOrderOfPreference = new List<Position>();
-            }
 
-            public string PlayerName { get; set; }
-
-            public List<Position> PositionsInOrderOfPreference { get; private set; }
-
-        }
+        public SolvingMode SolvingMode { get; set; }
 
         public Solution Solve(Domain domain)
         {
@@ -50,43 +47,46 @@ namespace Algorithms
 
             if (!solution.IsSolvable) return solution;
 
+            var availablePlayers = GetAvailablePlayers(domain);
 
             // solve the damn thing
             foreach (var item in domain.ScheduleItems)
             {
-                var availablePlayers = domain.PlayerItems.Except(
-                    domain.PlayerGameAvailabilityItems
-                        .Where(a => a.GameNumber == item.GameNumber)
-                        .Select(b => new PlayerItem { Name = b.Name})
-                    ).ToArray();
-
-                var game = new Game { Name = $"{item.GameNumber} - {item.Opponent}" };
-
-                if (availablePlayers.Length < 10)
-                {
-                    game.IsForfiet = true;
-                }
-                else
-                {
-                    var j = 0;
-                    foreach (var inning in game.Innings)
-                    {
-                        var i = j;
-                        foreach (var position in AvailablePositions())
-                        {
-                            inning[position] = availablePlayers[i].Name;
-                            i++;
-                            if (i == availablePlayers.Length) i = 0;
-                        }
-                        j++;
-                    }
-
-                }
+                var playersAvailableForThisGame = availablePlayers[item.GameNumber];
+                var game = SolvingModeAlgorithms[SolvingMode].SolveGame(item, playersAvailableForThisGame);
 
                 solution = solution.AddGame(game);
             }
 
             return solution;
+        }
+        
+        private Dictionary<int, GamePlayer[]> GetAvailablePlayers(Domain domain)
+        {
+            var retValue = new Dictionary<int, GamePlayer[]>();
+
+            foreach (var item in domain.ScheduleItems)
+            {
+                var availablePlayers = domain.PlayerItems
+                    .Except(
+                        domain.PlayerGameAvailabilityItems
+                            .Where(a => a.GameNumber == item.GameNumber)
+                            .Select(b => new PlayerItem {Name = b.Name})
+                        )
+                    .Select(c => new GamePlayer
+                    {
+                        PlayerName = c.Name,
+                        PositionRanks = domain.PlayerPositionItems
+                                              .Where(d => d.Name == c.Name)
+                                              .Select(e => new { e.Position, e.Rank })
+                                              .ToDictionary(f => f.Position, g => g.Rank)
+                    }).ToArray();
+
+                retValue.Add(item.GameNumber, availablePlayers);
+            }
+
+
+            return retValue;
         }
 
         private bool DomainIsSolvable(Domain domain) 

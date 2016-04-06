@@ -115,8 +115,8 @@ namespace Tests
         [Test]
         public void WhenNotEnoughPlayersItemsAreSubmittedSolutionIsSetAsSolvableAndGameIsListedAsForfeit()
         {
-            Domain.PlayerGameAvailabilityItems = new [] { new PlayerGameAvailabilityItem { GameNumber = 1, Name = "Player 1"}, };
-
+            Domain.PlayerGameAvailabilityItems = new [] { new PlayerGameAvailabilityItem { GameNumber = 1, Name = "Player 1"}, new PlayerGameAvailabilityItem { GameNumber = 1, Name = "Player 2" }, new PlayerGameAvailabilityItem { GameNumber = 1, Name = "Player 3" }, };
+          
             var result = SystemUnderTest.Solve(Domain);
 
             Assert.That(result.IsSolvable, Is.True);
