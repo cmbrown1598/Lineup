@@ -59,6 +59,9 @@ namespace Solver
 
             // Now, Assemble and write out your Lineups.
             var solver = new LineupSolver();
+
+            solver.SolvingMode = SolvingMode.OptimizeForSkill;
+
             var solution = solver.Solve(domain);
             if (solution.IsSolvable)
             {

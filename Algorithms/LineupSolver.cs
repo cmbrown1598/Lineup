@@ -12,7 +12,8 @@ namespace Algorithms
         public static Dictionary<SolvingMode, ISolveGamesAlgorithm> SolvingModeAlgorithms { get; } = new Dictionary
             <SolvingMode, ISolveGamesAlgorithm>()
         {
-            {SolvingMode.Simple, new SimpleAlgorithm()}
+            {SolvingMode.Simple, new SimpleAlgorithm()},
+            {SolvingMode.OptimizeForSkill, new OptimizeForSkillAlgorithm() }
         };
 
 
@@ -53,8 +54,17 @@ namespace Algorithms
             foreach (var item in domain.ScheduleItems)
             {
                 var playersAvailableForThisGame = availablePlayers[item.GameNumber];
-                var game = SolvingModeAlgorithms[SolvingMode].SolveGame(item, playersAvailableForThisGame);
+                var game = new Game { Name = $"{item.GameNumber} - {item.Opponent}" };
 
+                if (playersAvailableForThisGame.Length < 8)
+                {
+                    game.IsForfiet = true;
+                }
+                else
+                {
+                    game = SolvingModeAlgorithms[SolvingMode].SolveGame(item, playersAvailableForThisGame);
+                }
+                
                 solution = solution.AddGame(game);
             }
 

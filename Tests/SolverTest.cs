@@ -25,12 +25,13 @@ namespace Tests
 
         public PlayerPositionItem[] GetPlayerPositions(int numberOfPlayers)
         {
+            var random = new Random();
             return Enumerable.Range(1, numberOfPlayers)
                              .SelectMany(a => (int[]) Enum.GetValues(typeof (Position)), (a, n) => new PlayerPositionItem
                              {
                                 Name = $"Player {a}",
                                 Position = (Position) n,
-                                Rank = a
+                                Rank = random.Next(1, 10) 
                              }).ToArray();
         }
 
@@ -145,9 +146,12 @@ namespace Tests
             }
         }
 
-        [Test]
-        public void SolveSolvesSuccessfullyForBasicSetups()
+        [TestCase(SolvingMode.Simple)]
+        [TestCase(SolvingMode.OptimizeForSkill)]
+        public void SolveSolvesSuccessfullyForBasicSetups(SolvingMode solvingMode)
         {
+            SystemUnderTest.SolvingMode = solvingMode;   
+
             var positions = Enum.GetValues(typeof (Position));
             var result = SystemUnderTest.Solve(Domain);
 

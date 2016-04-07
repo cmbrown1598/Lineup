@@ -45,6 +45,7 @@
     <Compile Include="GamePlayer.cs" />
     <Compile Include="Inning.cs" />
     <Compile Include="ISolveGamesAlgorithm.cs" />
+    <Compile Include="OptimizeForSkillAlgorithm.cs" />
     <Compile Include="PlayerGameAvailabilityItem.cs" />
     <Compile Include="PlayerItem.cs" />
     <Compile Include="PlayerPositionItem.cs" />
