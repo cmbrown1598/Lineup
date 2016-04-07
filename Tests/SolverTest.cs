@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Policy;
@@ -170,22 +171,24 @@ namespace Tests
         [TestCase(SolvingMode.OptimizeForSkill)]
         public void SolveSolvesSuccessfullyForBasicSetups(SolvingMode solvingMode)
         {
-            SystemUnderTest.SolvingMode = solvingMode;   
+            SystemUnderTest.SolvingMode = solvingMode;
 
             var positions = Enum.GetValues(typeof (Position));
             var result = SystemUnderTest.Solve(Domain);
 
             var game = result.Games.First();
             // The game is not forfiet
-            Assert.That(game.IsForfiet, Is.False, "Game should not be forfeit.");
+            Assert.That(game.IsForfiet, Is.False, "Game should not be a forfeit.");
 
             foreach (
                 var playersList in
-                    game.Innings.Select(inning => (from Position position in positions select inning[position]).ToList())
+                    game.Innings.Select(
+                        inning => (from Position position in positions select inning[position]).ToList())
                 )
             {
                 // all players fielded are unique
-                Assert.That(playersList.Distinct().Count(), Is.EqualTo(10), "There are not enough unique players on the field.");
+                Assert.That(playersList.Distinct().Count(), Is.EqualTo(10),
+                    "There are not enough unique players on the field.");
             }
 
             foreach (Position position in positions)
@@ -197,6 +200,14 @@ namespace Tests
                     // no player is set to the same position more than twice.
                     Assert.That(isInvalid, Is.False, "Players repeat positions more than acceptably.");
                 }
+            }
+
+            var sittingOut = game.Innings.SelectMany(b => b.SittingOut).ToList();
+
+            for (var i = 0; i < sittingOut.Count - 1; i++)
+            {
+                var isInvalid = sittingOut[i] == sittingOut[i + 1];
+                Assert.That(isInvalid, Is.False, "Players sit out more than acceptably.");
             }
         }
     }

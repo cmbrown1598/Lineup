@@ -24,6 +24,10 @@ namespace Algorithms
                     inning[position] = playersByPosition[position].First(a => !added.Contains(a));
                     added.Add(inning[position]);
                 }
+                inning.SittingOut =
+                    playersAvailableForThisGame.Where(a => !added.Contains(a.PlayerName))
+                        .Select(b => b.PlayerName)
+                        .ToArray();
             }
 
             var inningsToSkip = new [] {2, 5};
@@ -38,6 +42,10 @@ namespace Algorithms
                     game.Innings.Skip(i).First()[position] = desiredPlayer;
                     added.Add(desiredPlayer);
                 }
+                game.Innings.Skip(i).First().SittingOut =
+                    playersAvailableForThisGame.Where(a => !added.Contains(a.PlayerName))
+                        .Select(b => b.PlayerName)
+                        .ToArray();
             }
 
             return game;
