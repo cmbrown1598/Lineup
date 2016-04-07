@@ -27,13 +27,15 @@ namespace Tests
             var scheduleItem = new ScheduleItem {GameNumber = 1, Opponent = "Newts"};
             var gamePlayers = Enumerable.Range(1, 10).Select((a) =>
             {
+                var position = (Position) (a - 1);
                 var f = new GamePlayer
                 {
-                    PlayerName = $"Player {a}",
+                    PlayerName = $"{position}",
                     PositionRanks = (from Position p in Enum.GetValues(typeof(Position)) select p).ToDictionary(b => b, c => 0)
                 };
-                f.PositionRanks[((Position)(a - 1))] = 10;
+                f.PositionRanks[position] = 10;
                 return f;
+
             }).ToArray();
 
             var game = SystemUnderTest.SolveGame(scheduleItem, gamePlayers);
@@ -41,9 +43,9 @@ namespace Tests
             foreach (var i in Enumerable.Range(1, 10))
             {
                 var position = ((Position) (i - 1));
-                var player = $"Player {i}";
+                var player = $"{position}";
                 var count = game.Innings.Count(inning => string.Equals(inning[position], player));
-                Assert.That(count, Is.EqualTo(5));
+                Assert.That(count, Is.EqualTo(5), "There should only be 5 innings where the 'best player' is playing a particular position.");
             }
         }
 

@@ -47,12 +47,32 @@ namespace Tests
         }
 
         [Test]
-        public void SolverCreatesAGameForEveryScheduleEntry()
+        public void SolverCreatesAGameForOneScheduleEntry()
         {
             var result = SystemUnderTest.Solve(Domain);
 
             Assert.That(result.Games.Count, Is.EqualTo(1));
             Assert.That(result.Games.First().Name, Is.EqualTo("1 - No One"));
+        }
+
+        [Test]
+        public void SolverCreatesAGameForMultipleScheduleEntries()
+        {
+
+            Domain.ScheduleItems = new[]
+            {
+                new ScheduleItem {GameNumber = 1, Opponent = "No One"},
+                new ScheduleItem {GameNumber = 2, Opponent = "Someone"},
+                new ScheduleItem {GameNumber = 3, Opponent = "Everyone"}
+            };
+
+            var result = SystemUnderTest.Solve(Domain);
+
+            Assert.That(result.Games.Count, Is.EqualTo(3));
+            Assert.That(result.Games.First().Name, Is.EqualTo("1 - No One"));
+            Assert.That(result.Games.Skip(1).First().Name, Is.EqualTo("2 - Someone"));
+            Assert.That(result.Games.Last().Name, Is.EqualTo("3 - Everyone"));
+
         }
 
         [Test]
@@ -157,7 +177,7 @@ namespace Tests
 
             var game = result.Games.First();
             // The game is not forfiet
-            Assert.That(game.IsForfiet, Is.False);
+            Assert.That(game.IsForfiet, Is.False, "Game should not be forfeit.");
 
             foreach (
                 var playersList in
@@ -165,7 +185,7 @@ namespace Tests
                 )
             {
                 // all players fielded are unique
-                Assert.That(playersList.Distinct().Count(), Is.EqualTo(10));
+                Assert.That(playersList.Distinct().Count(), Is.EqualTo(10), "There are not enough unique players on the field.");
             }
 
             foreach (Position position in positions)
@@ -175,7 +195,7 @@ namespace Tests
                 {
                     var isInvalid = (playerList[i] == playerList[i + 1]) && (playerList[i + 1] == playerList[i + 2]);
                     // no player is set to the same position more than twice.
-                    Assert.That(isInvalid, Is.False);
+                    Assert.That(isInvalid, Is.False, "Players repeat positions more than acceptably.");
                 }
             }
         }

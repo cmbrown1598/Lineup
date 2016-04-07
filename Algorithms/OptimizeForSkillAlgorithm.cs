@@ -26,11 +26,20 @@ namespace Algorithms
                 }
             }
 
-            foreach (var position in LineupSolver.AvailablePositions())
-            {
+            var inningsToSkip = new [] {2, 5};
 
+            foreach (var i in inningsToSkip)
+            {
+                var added = new List<string>();
+                foreach (var position in LineupSolver.AvailablePositions())
+                {
+                    var currentPlayer = game.Innings.Skip(i).First()[position];
+                    var desiredPlayer = playersByPosition[position].First(a => !added.Contains(a) && a != currentPlayer);
+                    game.Innings.Skip(i).First()[position] = desiredPlayer;
+                    added.Add(desiredPlayer);
+                }
             }
-            
+
             return game;
         }
 
